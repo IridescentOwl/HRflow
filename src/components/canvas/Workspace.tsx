@@ -333,7 +333,7 @@ const FlowCanvas = () => {
                 deleteKeyCode={['Backspace', 'Delete']}
                 className="bg-slate-50/50 dark:bg-slate-950/50"
             >
-                <Background gap={16} color={theme === 'dark' ? '#334155' : '#cbd5e1'} />
+                <Background gap={24} size={2} color={theme === 'dark' ? '#64748b' : '#94a3b8'} />
                 <Controls className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 fill-slate-700 dark:fill-slate-300 shadow-sm rounded-md mb-8" />
                 <MiniMap className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm rounded-md mb-8 ring-1 ring-slate-200 dark:ring-slate-800" maskColor={theme === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(248, 250, 252, 0.7)'} />
             </ReactFlow>
