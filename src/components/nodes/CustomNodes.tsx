@@ -26,7 +26,7 @@ export const TaskNode = (props: { id: string; data: TaskNodeData; selected: bool
                 {isAwaiting && (
                     <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-sky-100 dark:border-sky-900/50">
                         <span className="text-[10px] font-bold tracking-wide text-sky-500 uppercase animate-pulse">Awaiting Completion</span>
-                        <button onClick={() => triggerExecutionAction?.('Completed')} className="w-full bg-sky-500 hover:bg-sky-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Complete Task</button>
+                        <button id="tutorial-btn-complete" onClick={() => triggerExecutionAction?.('Completed')} className="w-full bg-sky-500 hover:bg-sky-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Complete Task</button>
                     </div>
                 )}
             </div>
@@ -50,8 +50,14 @@ export const ApprovalNode = (props: { id: string; data: ApprovalNodeData; select
                     <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-orange-100 dark:border-orange-900/50">
                         <span className="text-[10px] font-bold tracking-wide text-amber-500 uppercase animate-pulse">Authorization Required</span>
                         <div className="flex gap-2">
-                            <button onClick={() => triggerExecutionAction?.('Approved')} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Approve</button>
-                            <button onClick={() => triggerExecutionAction?.('Rejected')} className="flex-1 bg-rose-500 hover:bg-rose-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Reject</button>
+                            <button id="tutorial-btn-approve" onClick={() => triggerExecutionAction?.('Approved')} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Approve</button>
+                            <button onClick={() => {
+                                if (props.id === 'approval-1') {
+                                    alert("Are you sure? Try clicking 'Approve' to trigger the Easter Egg!");
+                                    return;
+                                }
+                                triggerExecutionAction?.('Rejected')
+                            }} className="flex-1 bg-rose-500 hover:bg-rose-400 text-white rounded py-1.5 font-bold shadow-sm transition-all active:scale-95">Reject</button>
                         </div>
                     </div>
                 )}

@@ -9,7 +9,7 @@ export const Sidebar: React.FC = () => {
     };
 
     return (
-        <aside className="w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 flex flex-col h-full shadow-2xl rounded-2xl z-10 overflow-hidden transition-all duration-300">
+        <aside id="tutorial-palette" className="w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 flex flex-col h-full shadow-2xl rounded-2xl z-10 overflow-hidden transition-all duration-300">
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 transition-colors duration-300">
                 <h2 className="text-sm uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">Node Palette</h2>
                 <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mt-1">Drag onto canvas to build flow.</p>

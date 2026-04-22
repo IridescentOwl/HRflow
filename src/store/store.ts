@@ -14,6 +14,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { HRNode, HREdge, SimulationLog } from '../types';
 
+import { workflowTemplates } from '../registry/templates';
+
 export interface WorkflowState {
     theme: 'light' | 'dark';
     nodes: HRNode[];
@@ -47,53 +49,9 @@ export interface WorkflowState {
 
     showSwimlanes: boolean;
     toggleSwimlanes: () => void;
+
+    loadTemplate: (templateId: string) => void;
 }
-
-const initialNodes: HRNode[] = [
-    {
-        id: 'start-1',
-        type: 'START',
-        position: { x: 50, y: 150 },
-        data: { title: 'Application Received', metadata: { Candidate: 'Dhairya', Role: 'Full Stack Engineering Intern' } }
-    },
-    {
-        id: 'task-1',
-        type: 'TASK',
-        position: { x: 300, y: 150 },
-        data: { title: 'Technical Interview', description: 'Evaluate React Flow & Zustand state management skills.', assignee: 'Engineering Team' }
-    },
-    {
-        id: 'approval-1',
-        type: 'APPROVAL',
-        position: { x: 600, y: 150 },
-        data: { title: 'Final Hiring Decision', approverRole: 'role_director', autoApproveThreshold: 1 }
-    },
-    {
-        id: 'automated-1',
-        type: 'AUTOMATED',
-        position: { x: 900, y: 50 },
-        data: { title: 'Send Acceptance Offer!', actionId: 'send_email' }
-    },
-    {
-        id: 'end-1',
-        type: 'END',
-        position: { x: 1200, y: 50 },
-        data: { title: 'Candidate Hired 🎉', endMessage: 'Onboarding sequences successfully initiated.' }
-    }
-];
-
-const initialEdges: HREdge[] = [
-    { id: 'edge-1', source: 'start-1', target: 'task-1', animated: true },
-    { id: 'edge-2', source: 'task-1', target: 'approval-1', animated: true },
-    {
-        id: 'edge-3', source: 'approval-1', target: 'automated-1', animated: true,
-        label: 'Approved',
-        style: { stroke: '#10b981', strokeWidth: 2 },
-        labelStyle: { fill: '#10b981', fontWeight: 700, fontSize: 13 },
-        data: { condition: 'Approved' }
-    },
-    { id: 'edge-4', source: 'automated-1', target: 'end-1', animated: true }
-];
 
 export const useWorkflowStore = create<WorkflowState>()(
     temporal(
@@ -104,11 +62,18 @@ export const useWorkflowStore = create<WorkflowState>()(
 
             toggleTheme: () => set(state => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
 
-            nodes: initialNodes,
-            edges: initialEdges,
+            nodes: workflowTemplates.hiring.nodes,
+            edges: workflowTemplates.hiring.edges,
             selectedNodeId: null,
             simulationLogs: [],
             validationErrors: [],
+
+            loadTemplate: (templateId: string) => {
+                const tmpl = workflowTemplates[templateId];
+                if (tmpl) {
+                    set({ nodes: tmpl.nodes, edges: tmpl.edges, selectedNodeId: null, validationErrors: [] });
+                }
+            },
 
             executionState: {
                 isRunning: false,

@@ -29,6 +29,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({ id, type, data, selected, is
 
     return (
         <div
+            id={`node-${id}`}
             className={cn(
                 "min-w-[200px] max-w-[280px] bg-white dark:bg-slate-800 rounded-lg shadow-sm border-2 overflow-hidden transition-all",
                 isActive ? "border-amber-400 shadow-lg ring-4 ring-amber-100/50 dark:ring-amber-900/50 shadow-amber-400/20 scale-[1.02]" : selected ? "border-sky-500 shadow-md ring-2 ring-sky-100 dark:ring-sky-900/50" : isInvalid ? "border-rose-500 shadow-md ring-2 ring-rose-100 dark:ring-rose-900/50" : "border-slate-200 dark:border-slate-700"

@@ -5,9 +5,61 @@ import { NodeEditor } from './components/forms/NodeEditor';
 import { SandboxPanel } from './components/sandbox/SandboxPanel';
 import { Sun, Moon } from 'lucide-react';
 import { useWorkflowStore } from './store/store';
+import { Joyride } from 'react-joyride';
 
 function App() {
-    const { theme, toggleTheme } = useWorkflowStore();
+    const { theme, toggleTheme, executionState } = useWorkflowStore();
+
+    let tourSteps: any[] = [];
+    let tourRun = false;
+    let tourKey = 'none';
+
+    if (!executionState.isRunning) {
+        tourSteps = [
+            {
+                target: '#tutorial-palette',
+                content: 'Welcome! Drag functional nodes from this Palette directly onto the visual canvas.',
+                disableBeacon: true,
+                placement: 'right'
+            },
+            {
+                target: '#tutorial-toolbar',
+                content: 'Use this Toolbar to jumpstart with standard industry Templates, or Export your builds!'
+            },
+            {
+                target: '#tutorial-sandbox-run',
+                content: 'Click Run Iteratively to visually simulate the graph. The system will wait for your physical clicks on the canvas!',
+                spotlightClicks: true,
+                disableBeacon: true
+            }
+        ];
+        tourRun = true;
+        tourKey = 'intro';
+    } else if (executionState.isPaused && executionState.activeNodeId === 'task-1') {
+        tourSteps = [
+            {
+                target: '#tutorial-btn-complete',
+                content: 'The graph execution has paused! Click Complete Task to manually approve this stage and advance the sequence.',
+                spotlightClicks: true,
+                disableBeacon: true,
+                hideFooter: true
+            }
+        ];
+        tourRun = true;
+        tourKey = 'task-1';
+    } else if (executionState.isPaused && executionState.activeNodeId === 'approval-1') {
+        tourSteps = [
+            {
+                target: '#tutorial-btn-approve',
+                content: 'The final barrier! Click Approve exactly here to automatically trigger the conditional email payload Easter Egg!',
+                spotlightClicks: true,
+                disableBeacon: true,
+                hideFooter: true
+            }
+        ];
+        tourRun = true;
+        tourKey = 'approval-1';
+    }
 
     useEffect(() => {
         if (theme === 'dark') {
@@ -20,6 +72,22 @@ function App() {
     // We add 'dark' class mappings to structural containers here
     return (
         <div className="w-screen h-screen flex flex-col bg-slate-100 dark:bg-slate-950 overflow-hidden font-sans transition-colors duration-300">
+            <Joyride
+                key={tourKey}
+                steps={tourSteps}
+                run={tourRun}
+                continuous
+                locale={{ last: 'Finish' }}
+                styles={{
+                    options: {
+                        primaryColor: '#0ea5e9',
+                        zIndex: 10000,
+                        textColor: '#334155',
+                        overlayColor: 'rgba(15, 23, 42, 0.85)'
+                    }
+                } as any}
+            />
+
             <header className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-6 shrink-0 shadow-sm z-20 transition-colors duration-300">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-sky-500 rounded-md flex items-center justify-center shadow-inner">

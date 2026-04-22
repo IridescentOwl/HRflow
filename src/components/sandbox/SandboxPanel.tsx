@@ -97,7 +97,7 @@ export const SandboxPanel = () => {
     };
 
     return (
-        <div className={`fixed bottom-0 left-0 right-0 bg-[#1e1e1e] border-t border-slate-700 shadow-2xl transition-all duration-300 z-50 flex flex-col ${isOpen ? 'h-64' : 'h-12'}`}>
+        <div id="tutorial-sandbox" className={`fixed bottom-0 left-0 right-0 bg-[#1e1e1e] border-t border-slate-700 shadow-2xl transition-all duration-300 z-50 flex flex-col ${isOpen ? 'h-64' : 'h-12'}`}>
             {/* Header bar */}
             <div className="flex items-center justify-between px-6 h-12 bg-slate-900 text-slate-100 shrink-0 cursor-pointer select-none group" onClick={() => setIsOpen(!isOpen)}>
                 <div className="flex items-center gap-3">
@@ -111,6 +111,7 @@ export const SandboxPanel = () => {
                 </div>
                 <div className="flex items-center gap-6">
                     <button
+                        id="tutorial-sandbox-run"
                         onClick={(e) => { e.stopPropagation(); runInteractive(); }}
                         disabled={isRunning || nodes.length === 0}
                         className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:bg-emerald-500 text-slate-900 hover:text-slate-900 text-xs font-bold rounded shadow-sm transition-colors"
