@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useWorkflowStore } from '../../store/store';
 import { WorkflowEngine } from '../../engine/engine';
 import { Play, Terminal, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Clock, PauseCircle } from 'lucide-react';
-import { SimulationLog } from '../../types';
+
 
 export const SandboxPanel = () => {
     const { nodes, edges, simulationLogs, addSimulationLog, clearSimulationLogs, executionState, setExecutionState, setTriggerExecutionAction } = useWorkflowStore();
