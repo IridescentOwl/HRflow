@@ -168,6 +168,12 @@ export class WorkflowEngine {
                     message: `Manual Task Completed: Marked as [${action}]`,
                 };
             } else if (node.type === 'AUTOMATED') {
+                if (node.data.title === 'Send Acceptance Offer!') {
+                    try {
+                        window.location.href = 'mailto:dparikh_be23@thapar.edu?subject=offer%20letter%20from%20tredence&body=Dear%20Candidate%2C%0D%0A%0D%0AWe%20are%20thrilled%20to%20offer%20you%20the%20position%20of%20Full%20Stack%20Engineering%20Intern%20%28AI%20Agentic%20Platforms%29%20at%20Tredence%20Analytics.%20We%20were%20highly%20impressed%20with%20your%20submission%20for%20the%20HR%20Workflow%20Designer%20Module%20case%20study.%0D%0A%0D%0AWe%20especially%20loved%20the%20little%20easter%20egg%20you%20built%20into%20the%20Approval%20Node%E2%80%94having%20it%20automatically%20send%20an%20acceptance%20email%20when%20run%20and%20approved%20was%20a%20brilliant%20touch%20that%20perfectly%20demonstrated%20the%20%22zero-to-one%22%20mindset%20we%20are%20looking%20for.%0D%0A%0D%0AWelcome%20to%20the%20Tredence%20Studio%20AI%20Agents%20Engineering%20Team%21%0D%0A%0D%0ABest%20regards%2C%0D%0ATredence%20Analytics';
+                    } catch (e) { }
+                }
+
                 yield {
                     id: crypto.randomUUID(),
                     nodeId: currentId,
