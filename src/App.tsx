@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Workspace } from './components/canvas/Workspace';
 import { NodeEditor } from './components/forms/NodeEditor';
 import { SandboxPanel } from './components/sandbox/SandboxPanel';

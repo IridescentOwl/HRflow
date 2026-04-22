@@ -64,4 +64,5 @@ export interface NodeDefinition {
   description: string;
   color: string;
   fields: FieldDefinition[];
+  schema?: any; // strict typing injected inside registry implementations via Zod
 }

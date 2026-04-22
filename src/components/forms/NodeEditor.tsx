@@ -1,4 +1,3 @@
-import React from 'react';
 import { useWorkflowStore } from '../../store/store';
 import { nodeRegistry } from '../../registry/nodeRegistry';
 import { DynamicForm } from './DynamicForm';

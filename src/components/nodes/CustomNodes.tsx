@@ -1,6 +1,5 @@
-import React from 'react';
 import { BaseNode } from './BaseNode';
-import { StartNodeData, TaskNodeData, ApprovalNodeData, AutomatedNodeData, EndNodeData } from '../../types';
+import { TaskNodeData, ApprovalNodeData, AutomatedNodeData } from '../../types';
 
 export const StartNode = (props: any) => {
     return (

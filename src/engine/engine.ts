@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { HRNode, HREdge, SimulationLog } from '../types';
+import { nodeRegistry } from '../registry/nodeRegistry';
 
 interface AdjacencyList {
     [nodeId: string]: string[];
@@ -41,24 +42,33 @@ export class WorkflowEngine {
             startNodes.forEach(n => errors.push({ nodeId: n.id, message: 'Workflow cannot have more than one Start Node.' }));
         }
 
-        if (errors.length > 0) return { isValid: false, errors };
-
         const startNode = startNodes[0];
         const visited = new Set<string>();
-        const stack = [startNode.id];
 
-        while (stack.length > 0) {
-            const current = stack.pop()!;
-            if (!visited.has(current)) {
-                visited.add(current);
-                const neighbors = this.adjacencyList[current] || [];
-                stack.push(...neighbors);
+        if (startNode) {
+            const stack = [startNode.id];
+            while (stack.length > 0) {
+                const current = stack.pop()!;
+                if (!visited.has(current)) {
+                    visited.add(current);
+                    const neighbors = this.adjacencyList[current] || [];
+                    stack.push(...neighbors);
+                }
             }
         }
 
-        for (const nodeId of this.nodes.keys()) {
-            if (!visited.has(nodeId)) {
+        for (const [nodeId, node] of this.nodes.entries()) {
+            if (startNode && !visited.has(nodeId)) {
                 errors.push({ nodeId, message: `Node disconnected from workflow path.` });
+            }
+
+            // Enforce Zod Schema strictly
+            const config = nodeRegistry[node.type as keyof typeof nodeRegistry];
+            if (config && config.schema) {
+                const validation = config.schema.safeParse(node.data);
+                if (!validation.success) {
+                    errors.push({ nodeId, message: 'Node configuration schema validation failed. Required fields missing.' });
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useWorkflowStore } from '../../store/store';
 import { simulateWorkflow } from '../../api/mockApi';
 import { WorkflowEngine } from '../../engine/engine';
