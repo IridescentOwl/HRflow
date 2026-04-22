@@ -31,15 +31,14 @@ export class WorkflowEngine {
         return list;
     }
 
-    // Pre-flight checks
-    public validate(): { isValid: boolean; errors: string[] } {
-        const errors: string[] = [];
+    public validate(): { isValid: boolean; errors: { nodeId: string; message: string }[] } {
+        const errors: { nodeId: string; message: string }[] = [];
         const startNodes = Array.from(this.nodes.values()).filter(n => n.type === 'START');
 
         if (startNodes.length === 0) {
-            errors.push('Workflow must have exactly one Start Node.');
+            errors.push({ nodeId: 'system', message: 'Workflow must have exactly one Start Node.' });
         } else if (startNodes.length > 1) {
-            errors.push('Workflow cannot have more than one Start Node.');
+            startNodes.forEach(n => errors.push({ nodeId: n.id, message: 'Workflow cannot have more than one Start Node.' }));
         }
 
         if (errors.length > 0) return { isValid: false, errors };
@@ -48,7 +47,6 @@ export class WorkflowEngine {
         const visited = new Set<string>();
         const stack = [startNode.id];
 
-        // Check for reachability
         while (stack.length > 0) {
             const current = stack.pop()!;
             if (!visited.has(current)) {
@@ -60,14 +58,13 @@ export class WorkflowEngine {
 
         for (const nodeId of this.nodes.keys()) {
             if (!visited.has(nodeId)) {
-                errors.push(`Node disconnected or unreachable: ${this.nodes.get(nodeId)?.data.title || nodeId}`);
+                errors.push({ nodeId, message: `Node disconnected from workflow path.` });
             }
         }
 
         return { isValid: errors.length === 0, errors };
     }
 
-    // Purely synchronous mock simulation logic step-by-step
     public *simulateStepByStep(): Generator<SimulationLog, void, unknown> {
         const startNodes = Array.from(this.nodes.values()).filter(n => n.type === 'START');
         if (startNodes.length === 0) {

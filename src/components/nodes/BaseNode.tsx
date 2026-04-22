@@ -4,6 +4,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { NodeType } from '../../types';
 import { nodeRegistry } from '../../registry/nodeRegistry';
+import { useWorkflowStore } from '../../store/store';
+import { AlertCircle } from 'lucide-react';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -21,12 +23,13 @@ interface BaseNodeProps {
 export const BaseNode: React.FC<BaseNodeProps> = ({ id, type, data, selected, isConnectable, children }) => {
     const config = nodeRegistry[type];
     const { title } = data;
+    const isInvalid = useWorkflowStore(state => state.validationErrors.some(e => e.nodeId === id));
 
     return (
         <div
             className={cn(
                 "min-w-[200px] max-w-[280px] bg-white rounded-lg shadow-sm border-2 overflow-hidden transition-all",
-                selected ? "border-sky-500 shadow-md ring-2 ring-sky-100" : "border-slate-200"
+                selected ? "border-sky-500 shadow-md ring-2 ring-sky-100" : isInvalid ? "border-rose-500 shadow-md ring-2 ring-rose-100" : "border-slate-200"
             )}
         >
             {/* Node Header */}
@@ -35,7 +38,8 @@ export const BaseNode: React.FC<BaseNodeProps> = ({ id, type, data, selected, is
                 style={{ backgroundColor: config.color }}
             >
                 <div className="flex items-center gap-2">
-                    <div className="text-sm font-semibold text-white tracking-wide">
+                    <div className="text-sm font-semibold text-white tracking-wide flex items-center gap-1.5">
+                        {isInvalid && <AlertCircle className="w-3.5 h-3.5 text-rose-200 shrink-0" />}
                         {title || config.label}
                     </div>
                 </div>

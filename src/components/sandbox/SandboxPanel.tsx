@@ -23,10 +23,10 @@ export const SandboxPanel = () => {
         if (!isValid) {
             errors.forEach(e => addSimulationLog({
                 id: crypto.randomUUID(),
-                nodeId: 'system',
+                nodeId: e.nodeId,
                 timestamp: new Date().toISOString(),
                 status: 'ERROR',
-                message: e,
+                message: e.message,
             }));
             setErrorMsg('Validation failed. See logs for details.');
             setIsRunning(false);
