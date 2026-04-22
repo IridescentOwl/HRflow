@@ -115,4 +115,76 @@ export class WorkflowEngine {
             message,
         };
     }
+
+    public *simulateInteractive(): Generator<SimulationLog | { type: 'PAUSE'; nodeId: string; prompt: string }, void, string | undefined> {
+        const startNodes = Array.from(this.nodes.values()).filter(n => n.type === 'START');
+        if (startNodes.length === 0) return;
+
+        const queue: string[] = [startNodes[0].id];
+        const visited = new Set<string>();
+
+        while (queue.length > 0) {
+            const currentId = queue.shift()!;
+            if (visited.has(currentId)) continue;
+            visited.add(currentId);
+
+            const node = this.nodes.get(currentId)!;
+
+            yield {
+                id: crypto.randomUUID(),
+                nodeId: currentId,
+                timestamp: new Date().toISOString(),
+                status: 'PENDING',
+                message: `Executing [${node.type}]: ${node.data.title || node.id}`,
+            };
+
+            if (node.type === 'APPROVAL') {
+                const action = yield { type: 'PAUSE', nodeId: currentId, prompt: `Awaiting action from ${node.data.approverRole || 'Manager'}` };
+                yield {
+                    id: crypto.randomUUID(),
+                    nodeId: currentId,
+                    timestamp: new Date().toISOString(),
+                    status: action === 'Rejected' ? 'ERROR' : 'SUCCESS',
+                    message: `Approval Node Processed: Decision was [${action}]`,
+                };
+                if (action === 'Rejected') break; // Halt structural logic
+            } else if (node.type === 'TASK') {
+                const action = yield { type: 'PAUSE', nodeId: currentId, prompt: `Awaiting human task completion by ${node.data.assignee || 'User'}` };
+                yield {
+                    id: crypto.randomUUID(),
+                    nodeId: currentId,
+                    timestamp: new Date().toISOString(),
+                    status: 'SUCCESS',
+                    message: `Manual Task Completed: Marked as [${action}]`,
+                };
+            } else if (node.type === 'AUTOMATED') {
+                yield {
+                    id: crypto.randomUUID(),
+                    nodeId: currentId,
+                    timestamp: new Date().toISOString(),
+                    status: 'SUCCESS',
+                    message: `Mock System API Triggered Action: ${node.data.actionId}`,
+                };
+            } else {
+                yield {
+                    id: crypto.randomUUID(),
+                    nodeId: currentId,
+                    timestamp: new Date().toISOString(),
+                    status: 'SUCCESS',
+                    message: `Processed structural node`,
+                };
+            }
+
+            const nextNodes = this.adjacencyList[currentId] || [];
+            queue.push(...nextNodes);
+        }
+
+        yield {
+            id: crypto.randomUUID(),
+            nodeId: 'system',
+            timestamp: new Date().toISOString(),
+            status: 'SUCCESS',
+            message: `Workflow completed execution successfully.`,
+        };
+    }
 }

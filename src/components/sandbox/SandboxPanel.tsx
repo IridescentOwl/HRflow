@@ -1,21 +1,64 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useWorkflowStore } from '../../store/store';
-import { simulateWorkflow } from '../../api/mockApi';
 import { WorkflowEngine } from '../../engine/engine';
-import { Play, Terminal, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Clock } from 'lucide-react';
+import { Play, Terminal, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Clock, PauseCircle } from 'lucide-react';
 import { SimulationLog } from '../../types';
 
 export const SandboxPanel = () => {
-    const { nodes, edges, simulationLogs, addSimulationLog, clearSimulationLogs } = useWorkflowStore();
+    const { nodes, edges, simulationLogs, addSimulationLog, clearSimulationLogs, executionState, setExecutionState, setTriggerExecutionAction } = useWorkflowStore();
     const [isOpen, setIsOpen] = useState(false);
     const [isRunning, setIsRunning] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const runSimulation = async () => {
+    const iteratorRef = useRef<Generator<any, void, any>>();
+
+    const handleStep = useCallback((action?: string) => {
+        if (!iteratorRef.current) return;
+
+        try {
+            const res = iteratorRef.current.next(action);
+            if (!res.done) {
+                if (res.value.type === 'PAUSE') {
+                    setExecutionState({ isPaused: true, activeNodeId: res.value.nodeId });
+
+                    addSimulationLog({
+                        id: crypto.randomUUID(),
+                        nodeId: res.value.nodeId,
+                        timestamp: new Date().toISOString(),
+                        status: 'PENDING',
+                        message: `PAUSED: ${res.value.prompt} - Interact with the Node on your Canvas!`
+                    });
+                } else {
+                    addSimulationLog(res.value);
+                    setExecutionState({ activeNodeId: res.value.nodeId });
+
+                    // Proceed sequence automatically after brief delay
+                    setTimeout(() => handleStep(), 600);
+                }
+            } else {
+                setExecutionState({ isRunning: false, isPaused: false, activeNodeId: null });
+                setIsRunning(false);
+                setTriggerExecutionAction(null);
+            }
+        } catch (e: any) {
+            addSimulationLog({
+                id: crypto.randomUUID(),
+                nodeId: 'system',
+                timestamp: new Date().toISOString(),
+                status: 'ERROR',
+                message: e.message || 'Execution error encountered.',
+            });
+            setExecutionState({ isRunning: false, isPaused: false, activeNodeId: null });
+            setIsRunning(false);
+        }
+    }, [addSimulationLog, setExecutionState, setTriggerExecutionAction]);
+
+    const runInteractive = async () => {
         setIsOpen(true);
         setIsRunning(true);
         clearSimulationLogs();
         setErrorMsg(null);
+        setExecutionState({ isRunning: true, isPaused: false, activeNodeId: null });
 
         const engine = new WorkflowEngine(nodes, edges);
         const { isValid, errors } = engine.validate();
@@ -30,36 +73,18 @@ export const SandboxPanel = () => {
             }));
             setErrorMsg('Validation failed. See logs for details.');
             setIsRunning(false);
+            setExecutionState({ isRunning: false });
             return;
         }
 
-        try {
-            // Hit local generator mock (delaying to seem real)
-            const gen = engine.simulateStepByStep();
+        // Set the global resume function
+        setTriggerExecutionAction((action: string) => {
+            setExecutionState({ isPaused: false });
+            handleStep(action);
+        });
 
-            const processNext = async () => {
-                const result = gen.next();
-                if (!result.done) {
-                    addSimulationLog(result.value as SimulationLog);
-                    setTimeout(processNext, 600); // 600ms artificial delay between logs
-                } else {
-                    // Simulate real API boundary hit after building timeline graph sequentially
-                    await simulateWorkflow(nodes, edges);
-                    setIsRunning(false);
-                }
-            };
-
-            processNext();
-        } catch (e: any) {
-            addSimulationLog({
-                id: crypto.randomUUID(),
-                nodeId: 'system',
-                timestamp: new Date().toISOString(),
-                status: 'ERROR',
-                message: e.message || 'Unknown error occurred.',
-            });
-            setIsRunning(false);
-        }
+        iteratorRef.current = engine.simulateInteractive();
+        handleStep();
     };
 
     const getStatusColor = (status: string) => {
@@ -80,17 +105,18 @@ export const SandboxPanel = () => {
                     <span className="text-sm font-semibold tracking-wide uppercase">Developer Sandbox</span>
                     <div className="flex items-center ml-2 border-l border-slate-700 pl-4">
                         {errorMsg && <span className="text-xs bg-rose-500/10 text-rose-300 px-2 py-0.5 rounded border border-rose-500/20">{errorMsg}</span>}
-                        {isRunning && <span className="text-xs bg-sky-500/10 text-sky-300 px-2 py-0.5 rounded flex items-center gap-1.5"><Clock className="w-3 h-3 animate-spin" /> Executing Pipeline...</span>}
+                        {executionState.isPaused && <span className="text-xs bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded flex items-center gap-1.5"><PauseCircle className="w-3 h-3 animate-pulse" /> Awaiting Human In-The-Loop...</span>}
+                        {isRunning && !executionState.isPaused && <span className="text-xs bg-sky-500/10 text-sky-300 px-2 py-0.5 rounded flex items-center gap-1.5"><Clock className="w-3 h-3 animate-spin" /> Executing Pipeline...</span>}
                     </div>
                 </div>
                 <div className="flex items-center gap-6">
                     <button
-                        onClick={(e) => { e.stopPropagation(); runSimulation(); }}
+                        onClick={(e) => { e.stopPropagation(); runInteractive(); }}
                         disabled={isRunning || nodes.length === 0}
                         className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:bg-emerald-500 text-slate-900 hover:text-slate-900 text-xs font-bold rounded shadow-sm transition-colors"
                     >
                         <Play className="w-3 h-3 fill-current" />
-                        Simulate Run
+                        Run Iteratively
                     </button>
                     <div className="p-1 rounded group-hover:bg-slate-800 transition-colors">
                         {isOpen ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronUp className="w-4 h-4 text-slate-400" />}
@@ -104,10 +130,10 @@ export const SandboxPanel = () => {
                     {simulationLogs.length === 0 ? (
                         <div className="text-slate-500 flex flex-col items-center justify-center h-full mt-4">
                             <Terminal className="w-8 h-8 mb-3 opacity-20" />
-                            <span>Click "Simulate Run" to generate an execution timeline.</span>
+                            <span>Click "Run Iteratively" to invoke execution path.</span>
                         </div>
                     ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-2 pb-8">
                             {simulationLogs.map(log => (
                                 <div key={log.id} className="flex items-start gap-4">
                                     <span className="text-slate-500 shrink-0 opacity-50 w-24">[{new Date(log.timestamp).toLocaleTimeString()}]</span>

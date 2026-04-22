@@ -35,6 +35,14 @@ export interface WorkflowState {
 
     addSimulationLog: (log: SimulationLog) => void;
     clearSimulationLogs: () => void;
+    executionState: {
+        isRunning: boolean;
+        activeNodeId: string | null;
+        isPaused: boolean;
+    };
+    setExecutionState: (state: Partial<WorkflowState['executionState']>) => void;
+    triggerExecutionAction: ((action: string) => void) | null;
+    setTriggerExecutionAction: (fn: ((action: string) => void) | null) => void;
 }
 
 export const useWorkflowStore = create<WorkflowState>()(
@@ -48,6 +56,15 @@ export const useWorkflowStore = create<WorkflowState>()(
             selectedNodeId: null,
             simulationLogs: [],
             validationErrors: [],
+
+            executionState: {
+                isRunning: false,
+                activeNodeId: null,
+                isPaused: false,
+            },
+            setExecutionState: (state) => set((s) => ({ executionState: { ...s.executionState, ...state } })),
+            triggerExecutionAction: null,
+            setTriggerExecutionAction: (fn) => set({ triggerExecutionAction: fn }),
 
             onNodesChange: (changes: NodeChange[]) => {
                 set({ nodes: applyNodeChanges(changes, get().nodes) as HRNode[] });
