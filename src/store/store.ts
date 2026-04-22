@@ -14,12 +14,14 @@ import {
 import { HRNode, HREdge, SimulationLog } from '../types';
 
 export interface WorkflowState {
+    theme: 'light' | 'dark';
     nodes: HRNode[];
     edges: HREdge[];
     selectedNodeId: string | null;
     simulationLogs: SimulationLog[];
     validationErrors: { nodeId: string; message: string }[];
 
+    toggleTheme: () => void;
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
@@ -38,6 +40,9 @@ export interface WorkflowState {
 export const useWorkflowStore = create<WorkflowState>()(
     temporal(
         (set, get) => ({
+            theme: 'light',
+            toggleTheme: () => set(state => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+
             nodes: [],
             edges: [],
             selectedNodeId: null,

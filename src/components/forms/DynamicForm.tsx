@@ -35,7 +35,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ node, config }) => {
                         type={field.type}
                         value={value ?? field.defaultValue ?? ''}
                         onChange={(e) => handleChange(field.name, field.type === 'number' ? Number(e.target.value) : e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white text-slate-900 placeholder:text-slate-400 shadow-sm"
+                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm"
                         placeholder={`Enter ${field.label.toLowerCase()}...`}
                     />
                 );
@@ -44,7 +44,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ node, config }) => {
                     <textarea
                         value={value ?? field.defaultValue ?? ''}
                         onChange={(e) => handleChange(field.name, e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white text-slate-900 placeholder:text-slate-400 min-h-[80px] shadow-sm"
+                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 min-h-[80px] shadow-sm"
                         placeholder={`Enter ${field.label.toLowerCase()}...`}
                     />
                 );
@@ -58,7 +58,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ node, config }) => {
                     <select
                         value={value ?? field.defaultValue ?? ''}
                         onChange={(e) => handleChange(field.name, e.target.value)}
-                        className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white text-slate-900 shadow-sm"
+                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-shadow bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm"
                     >
                         <option value="" disabled>Select an option</option>
                         {options.map((opt) => (
@@ -70,19 +70,19 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ node, config }) => {
                 );
             case 'boolean':
                 return (
-                    <label className="flex items-center gap-2 cursor-pointer bg-white p-2 border border-slate-200 rounded-md shadow-sm hover:bg-slate-50 transition-colors">
+                    <label className="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 p-2 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <input
                             type="checkbox"
                             checked={!!value}
                             onChange={(e) => handleChange(field.name, e.target.checked)}
-                            className="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
+                            className="w-4 h-4 text-sky-600 border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded focus:ring-sky-500"
                         />
-                        <span className="text-sm font-medium text-slate-700 select-none">Enable {field.label}</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 select-none">Enable {field.label}</span>
                     </label>
                 );
             case 'key-value':
                 return (
-                    <div className="text-xs text-slate-400 italic p-3 border border-dashed border-slate-300 bg-slate-50 rounded-md">
+                    <div className="text-xs text-slate-400 dark:text-slate-500 italic p-3 border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-md">
                         Key-Value editor coming soon in full version.
                     </div>
                 );
@@ -95,7 +95,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ node, config }) => {
         <div className="space-y-4">
             {config.fields.map((field) => (
                 <div key={field.name} className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-600 tracking-wide uppercase">
+                    <label className="text-xs font-bold text-slate-600 dark:text-slate-400 tracking-wide uppercase">
                         {field.label} {field.required && <span className="text-red-500">*</span>}
                     </label>
                     {renderField(field)}
