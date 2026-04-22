@@ -80,12 +80,12 @@ function App() {
                 locale={{ last: 'Finish' }}
                 styles={{
                     options: {
-                        primaryColor: theme === 'dark' ? '#38bdf8' : '#0ea5e9',
+                        primaryColor: theme === 'dark' ? '#fbbf24' : '#0ea5e9',
                         zIndex: 10000,
-                        textColor: theme === 'dark' ? '#f8fafc' : '#334155',
-                        backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
-                        arrowColor: theme === 'dark' ? '#1e293b' : '#ffffff',
-                        overlayColor: 'rgba(15, 23, 42, 0.85)'
+                        textColor: theme === 'dark' ? '#ffffff' : '#334155',
+                        backgroundColor: theme === 'dark' ? '#334155' : '#ffffff',
+                        arrowColor: theme === 'dark' ? '#334155' : '#ffffff',
+                        overlayColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.90)' : 'rgba(15, 23, 42, 0.80)'
                     }
                 } as any}
             />
