@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Workspace } from './components/canvas/Workspace';
+import { Sidebar } from './components/canvas/Sidebar';
 import { NodeEditor } from './components/forms/NodeEditor';
 import { SandboxPanel } from './components/sandbox/SandboxPanel';
 import { Sun, Moon } from 'lucide-react';
@@ -39,14 +40,25 @@ function App() {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex flex-1 overflow-hidden pb-12">
-                {/* Workspace contains Sidebar and Canvas */}
-                <div className="flex-1 flex overflow-hidden">
+            <main className="flex-1 relative overflow-hidden">
+                {/* Workspace Canvas is now full width underneath everything */}
+                <div className="absolute inset-0">
                     <Workspace />
                 </div>
 
-                {/* Right Panel for configuration */}
-                <NodeEditor />
+                {/* Left Floating Sidebar */}
+                <div className="absolute top-4 left-4 bottom-20 z-20 flex flex-col pointer-events-none">
+                    <div className="pointer-events-auto h-full">
+                        <Sidebar />
+                    </div>
+                </div>
+
+                {/* Right Floating Configuration Panel */}
+                <div className="absolute top-4 right-4 bottom-20 z-20 flex flex-col pointer-events-none">
+                    <div className="pointer-events-auto h-full">
+                        <NodeEditor />
+                    </div>
+                </div>
             </main>
 
             {/* Bottom sliding panel for dev sandbox */}

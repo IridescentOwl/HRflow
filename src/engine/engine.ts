@@ -138,8 +138,10 @@ export class WorkflowEngine {
                 message: `Executing [${node.type}]: ${node.data.title || node.id}`,
             };
 
+            let nextNodes = this.adjacencyList[currentId] || [];
+
             if (node.type === 'APPROVAL') {
-                const action = yield { type: 'PAUSE', nodeId: currentId, prompt: `Awaiting action from ${node.data.approverRole || 'Manager'}` };
+                const action = yield { type: 'PAUSE', nodeId: currentId, prompt: `Awaiting action from ${node.data.approverRole?.replace('role_', '').toUpperCase() || 'Manager'}` };
                 yield {
                     id: crypto.randomUUID(),
                     nodeId: currentId,
@@ -147,7 +149,15 @@ export class WorkflowEngine {
                     status: action === 'Rejected' ? 'ERROR' : 'SUCCESS',
                     message: `Approval Node Processed: Decision was [${action}]`,
                 };
-                if (action === 'Rejected') break; // Halt structural logic
+
+                // Pathway Branch Logic
+                if (action === 'Rejected') {
+                    const rejectedEdge = this.edges.find(e => e.source === currentId && e.data?.condition === 'Rejected');
+                    nextNodes = rejectedEdge ? [rejectedEdge.target] : [];
+                } else if (action === 'Approved') {
+                    const approvedEdge = this.edges.find(e => e.source === currentId && e.data?.condition === 'Approved');
+                    if (approvedEdge) nextNodes = [approvedEdge.target];
+                }
             } else if (node.type === 'TASK') {
                 const action = yield { type: 'PAUSE', nodeId: currentId, prompt: `Awaiting human task completion by ${node.data.assignee || 'User'}` };
                 yield {
@@ -175,7 +185,6 @@ export class WorkflowEngine {
                 };
             }
 
-            const nextNodes = this.adjacencyList[currentId] || [];
             queue.push(...nextNodes);
         }
 

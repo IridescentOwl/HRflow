@@ -11,6 +11,7 @@ import {
     applyNodeChanges,
     applyEdgeChanges,
 } from 'reactflow';
+import { v4 as uuidv4 } from 'uuid';
 import { HRNode, HREdge, SimulationLog } from '../types';
 
 export interface WorkflowState {
@@ -43,12 +44,18 @@ export interface WorkflowState {
     setExecutionState: (state: Partial<WorkflowState['executionState']>) => void;
     triggerExecutionAction: ((action: string) => void) | null;
     setTriggerExecutionAction: (fn: ((action: string) => void) | null) => void;
+
+    showSwimlanes: boolean;
+    toggleSwimlanes: () => void;
 }
 
 export const useWorkflowStore = create<WorkflowState>()(
     temporal(
         (set, get) => ({
             theme: 'light',
+            showSwimlanes: false,
+            toggleSwimlanes: () => set(state => ({ showSwimlanes: !state.showSwimlanes })),
+
             toggleTheme: () => set(state => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
 
             nodes: [],
@@ -73,7 +80,26 @@ export const useWorkflowStore = create<WorkflowState>()(
                 set({ edges: applyEdgeChanges(changes, get().edges) as HREdge[] });
             },
             onConnect: (connection: Connection) => {
-                set({ edges: addEdge(connection, get().edges) });
+                const sourceNode = get().nodes.find(n => n.id === connection.source);
+                let edgePayload: any = { ...connection, id: `edge-${uuidv4()}` };
+
+                if (sourceNode?.type === 'APPROVAL') {
+                    const existingOutEdges = get().edges.filter(e => e.source === connection.source);
+                    if (existingOutEdges.length >= 2) return; // Prevent more than 2 condition paths
+
+                    const label = existingOutEdges.length === 0 ? 'Approved' : 'Rejected';
+
+                    edgePayload = {
+                        ...edgePayload,
+                        label,
+                        style: { stroke: label === 'Approved' ? '#10b981' : '#f43f5e', strokeWidth: 2 },
+                        animated: true,
+                        labelStyle: { fill: label === 'Approved' ? '#10b981' : '#f43f5e', fontWeight: 700, fontSize: 13 },
+                        data: { condition: label }
+                    };
+                }
+
+                set({ edges: addEdge(edgePayload, get().edges) as HREdge[] });
             },
             addNode: (node: HRNode) => {
                 set({ nodes: [...get().nodes, node] });

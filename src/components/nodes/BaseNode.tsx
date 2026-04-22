@@ -41,6 +41,10 @@ export const BaseNode: React.FC<BaseNodeProps> = ({ id, type, data, selected, is
             >
                 <div className="flex items-center gap-2">
                     <div className="text-sm font-semibold text-white tracking-wide flex items-center gap-1.5">
+                        {config.icon && (() => {
+                            const Icon = config.icon;
+                            return <Icon className="w-3.5 h-3.5 opacity-90 mr-0.5" />;
+                        })()}
                         {isInvalid && <AlertCircle className="w-3.5 h-3.5 text-rose-100 shrink-0" />}
                         {title || config.label}
                     </div>
