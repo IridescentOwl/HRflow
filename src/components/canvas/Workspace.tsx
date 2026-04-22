@@ -412,11 +412,12 @@ const FlowCanvas = () => {
                 <Background gap={24} size={2} color={theme === 'dark' ? '#64748b' : '#94a3b8'} />
                 <Controls
                     position="bottom-left"
-                    className="!bg-white dark:!bg-slate-800 !border-2 !border-slate-300 dark:!border-slate-600 shadow-xl rounded-lg !mb-8 !ml-8 !z-20 overflow-hidden"
+                    className="!bg-white dark:!bg-slate-800 !border-2 !border-slate-300 dark:!border-slate-600 shadow-xl rounded-lg !mb-20 !ml-72 !z-20 overflow-hidden"
                     style={{ '--xy-controls-button-bg-color': theme === 'dark' ? '#1e293b' : '#ffffff', '--xy-controls-button-color': theme === 'dark' ? '#f1f5f9' : '#334155', '--xy-controls-button-border-color': theme === 'dark' ? '#334155' : '#e2e8f0', '--xy-controls-button-bg-color-hover': theme === 'dark' ? '#334155' : '#f1f5f9' } as React.CSSProperties}
                 />
                 <MiniMap
-                    className={`!bg-white dark:!bg-slate-800 !border-2 !border-slate-300 dark:!border-slate-600 shadow-2xl rounded-lg mb-8 !z-20 transition-opacity duration-300 ${isMoving ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    position="bottom-right"
+                    className={`!bg-white dark:!bg-slate-800 !border-2 !border-slate-300 dark:!border-slate-600 shadow-2xl rounded-lg !mb-20 !mr-80 !pr-4 !z-20 transition-opacity duration-300 ${isMoving ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                     maskColor={theme === 'dark' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(241, 245, 249, 0.85)'}
                     nodeColor={(n: any) => n.selected ? '#0ea5e9' : theme === 'dark' ? '#475569' : '#cbd5e1'}
                 />

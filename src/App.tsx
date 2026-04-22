@@ -80,9 +80,11 @@ function App() {
                 locale={{ last: 'Finish' }}
                 styles={{
                     options: {
-                        primaryColor: '#0ea5e9',
+                        primaryColor: theme === 'dark' ? '#38bdf8' : '#0ea5e9',
                         zIndex: 10000,
-                        textColor: '#334155',
+                        textColor: theme === 'dark' ? '#f8fafc' : '#334155',
+                        backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
+                        arrowColor: theme === 'dark' ? '#1e293b' : '#ffffff',
                         overlayColor: 'rgba(15, 23, 42, 0.85)'
                     }
                 } as any}
